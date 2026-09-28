@@ -39,4 +39,8 @@ Thumbs.db
 
 # Build files
 *.apk
-*.aab
+*.aab'
+
+# Unity recovery files
+Assets/_Recovery/
+Assets/_Recovery.meta
