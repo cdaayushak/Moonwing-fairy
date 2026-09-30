@@ -101,7 +101,9 @@ The player can select **PLAY AGAIN** to restart.
 
 ## Play Online
 
-[web version link to uploaded]
+Moonwing Forest is available to play directly in a desktop web browser:
+
+https://play.unity.com/en/games/9fc9f884-7174-40d2-9ad3-7719fd4ffa9f/moonwing-web-build
 
 ## Running the Unity Project
 
