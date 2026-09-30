@@ -10,6 +10,9 @@ public class FairyMagic : MonoBehaviour
     public GameObject capturedPanel;
 
     private bool isCaptured = false;
+    public bool IsCaptured => isCaptured;
+    AssassinSpawner spawner;
+    void Awake() { spawner = FindAnyObjectByType<AssassinSpawner>(); }
 
     void Start()
     {
@@ -30,7 +33,7 @@ public class FairyMagic : MonoBehaviour
 
     public void DrainMagic(float amount)
     {
-        if (isCaptured)
+        if (isCaptured || (spawner && spawner.VictoryTriggered))
             return;
 
         currentMagic -= amount;

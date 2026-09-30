@@ -46,5 +46,6 @@ public class CaretakerInteraction : MonoBehaviour
             ];
 
         Debug.Log("Caretaker: " + line);
+        Moonwing.Visuals.MoonwingDialogueBubble.Show(transform, line);
     }
 }

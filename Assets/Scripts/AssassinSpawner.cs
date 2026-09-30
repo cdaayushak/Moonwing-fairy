@@ -8,7 +8,7 @@ public class AssassinSpawner : MonoBehaviour
     public GameObject victoryPanel;
 
     // Hidden total - the player never sees this
-    public int totalAssassins = 12;
+    public int totalAssassins = 6;
 
     public float minimumDistance = 10f;
     public float maximumDistance = 18f;
@@ -19,6 +19,7 @@ public class AssassinSpawner : MonoBehaviour
 
     private int assassinsSpawned = 0;
     private int activeAssassins = 0;
+    public bool VictoryTriggered { get; private set; }
 
     void Start()
 {
@@ -40,7 +41,7 @@ public class AssassinSpawner : MonoBehaviour
             // Randomly send 1, 2, or 3 assassins
             int groupSize = Random.Range(1, 4);
 
-            // Never exceed our hidden total of 12
+            // Never exceed the configured hidden total.
             groupSize = Mathf.Min(
                 groupSize,
                 totalAssassins - assassinsSpawned
@@ -65,7 +66,11 @@ public class AssassinSpawner : MonoBehaviour
         Debug.Log("All assassins defeated!");// Let the forest stay quiet for a moment
         yield return new WaitForSeconds(3f);
 
-        // Show the victory screen
+        // One terminal outcome; a capture during the settling delay must not become victory.
+        FairyMagic magic = player ? player.GetComponent<FairyMagic>() : null;
+        if (VictoryTriggered || (magic && magic.IsCaptured)) yield break;
+        VictoryTriggered = true;
+        // The existing panel now presents confirmation before its final poem.
         if (victoryPanel != null)
         {
             victoryPanel.SetActive(true);
@@ -77,21 +82,7 @@ Time.timeScale = 0f;
 
     void SpawnAssassin()
     {
-        Vector2 randomDirection =
-            Random.insideUnitCircle.normalized;
-
-        float distance = Random.Range(
-            minimumDistance,
-            maximumDistance
-        );
-
-        Vector3 spawnPosition =
-            player.position +
-            new Vector3(
-                randomDirection.x * distance,
-                1f,
-                randomDirection.y * distance
-            );
+        Vector3 spawnPosition = FindSpawnPosition();
 
         GameObject assassin = Instantiate(
             assassinPrefab,
@@ -116,6 +107,20 @@ Time.timeScale = 0f;
         {
             health.spawner = this;
         }
+    }
+
+    Vector3 FindSpawnPosition()
+    {
+        for (int attempt = 0; attempt < 24; attempt++)
+        {
+            Vector2 direction = Random.insideUnitCircle.normalized;
+            float distance = Random.Range(minimumDistance, maximumDistance);
+            Vector3 position = player.position + new Vector3(direction.x * distance, 1f, direction.y * distance);
+            if (Moonwing.Visuals.MoonwingForestBoundary.Contains(position, 1f)) return position;
+        }
+        Vector3 inward = new Vector3(-player.position.x, 0, -player.position.z).normalized;
+        if (inward.sqrMagnitude < 0.01f) inward = Vector3.forward;
+        return Moonwing.Visuals.MoonwingForestBoundary.Clamp(player.position + inward * minimumDistance + Vector3.up, 1f);
     }
 
     // EnemyHealth calls this when an assassin is defeated

@@ -59,5 +59,7 @@ public class NPCConversation : MonoBehaviour
 
         Debug.Log("Caretaker: " + caretakerLine);
         Debug.Log("Forest Spirit: " + spiritLine);
+        Moonwing.Visuals.MoonwingDialogueBubble.Show(transform, caretakerLine);
+        Moonwing.Visuals.MoonwingDialogueBubble.Show(otherNPC, spiritLine);
     }
 }
